@@ -2,6 +2,7 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+import time
 import re
 
 # Load environment variables from .env file
@@ -10,9 +11,9 @@ load_dotenv()
 # Configure genai with the API key
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
+model = genai.GenerativeModel('gemini-pro')
+
 def clean_response(response_text):
-    if response_text is None:
-        return "No response received from the API."
     # Remove Markdown formatting (e.g., **bold**)
     cleaned_text = re.sub(r'\*\*(.*?)\*\*', r'\1', response_text)
     return cleaned_text
@@ -24,20 +25,9 @@ def generate_response(user_input):
         "answer health-related questions, and help users understand their symptoms. "
         "If the user asks questions that are not related to medical topics, politely decline to answer."
     )
-    
-    try:
-        response = genai.generate_text(
-            model='models/text-bison-001',
-            prompt=f"{role_instruction}\n\nUser: {user_input}\nChatbot:"
-        )
-        if response is None:
-            st.error("No response received from the API.")
-            return "No response received from the API."
-        cleaned_response = clean_response(response.result)
-        return cleaned_response
-    except Exception as e:
-        st.error(f"Error during API call: {e}")
-        return f"Error during API call: {e}"
+    response = model.generate_content(f"{role_instruction}\n\nUser: {user_input}\nChatbot:")
+    cleaned_response = clean_response(response.text.strip())
+    return cleaned_response
 
 def main():
     st.title("Medical Chatbot using Google Generative AI")
@@ -65,3 +55,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
