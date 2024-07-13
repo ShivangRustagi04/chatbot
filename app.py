@@ -22,14 +22,13 @@ def generate_response(user_input):
         "answer health-related questions, and help users understand their symptoms. "
         "If the user asks questions that are not related to medical topics, politely decline to answer."
     )
-    response = genai.chat(
-        model='models/chat-bison-001',
-        messages=[
-            {"role": "system", "content": role_instruction},
-            {"role": "user", "content": user_input}
-        ]
+    
+    response = genai.generate_text(
+        model='models/text-bison-001',
+        prompt=f"{role_instruction}\n\nUser: {user_input}\nChatbot:"
     )
-    cleaned_response = clean_response(response['candidates'][0]['message']['content'])
+    
+    cleaned_response = clean_response(response.result)
     return cleaned_response
 
 def main():
