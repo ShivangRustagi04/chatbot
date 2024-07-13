@@ -2,7 +2,6 @@ import streamlit as st
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
-import time
 import re
 
 # Load environment variables from .env file
@@ -10,8 +9,6 @@ load_dotenv()
 
 # Configure genai with the API key
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
-model = genai.GenerativeModel('gemini-pro')
 
 def clean_response(response_text):
     # Remove Markdown formatting (e.g., **bold**)
@@ -25,8 +22,13 @@ def generate_response(user_input):
         "answer health-related questions, and help users understand their symptoms. "
         "If the user asks questions that are not related to medical topics, politely decline to answer."
     )
-    response = model.generate_content(f"{role_instruction}\n\nUser: {user_input}\nChatbot:")
-    cleaned_response = clean_response(response.text.strip())
+    messages = [
+        {"role": "system", "content": role_instruction},
+        {"role": "user", "content": user_input}
+    ]
+    
+    response = genai.generate(messages=messages, model="models/chat-bison-001")
+    cleaned_response = clean_response(response['messages'][0]['content'].strip())
     return cleaned_response
 
 def main():
