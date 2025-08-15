@@ -11,7 +11,7 @@ load_dotenv()
 # Configure genai with the API key
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-2.5-pro')
 
 def clean_response(response_text):
     # Remove Markdown formatting (e.g., **bold**)
@@ -55,5 +55,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
