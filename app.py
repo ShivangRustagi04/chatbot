@@ -20,8 +20,23 @@ def generate_response(user_input):
         "answer health-related questions, and help users understand their symptoms. "
         "If the user asks non-medical questions, politely decline."
     )
-    response = model.generate_content(f"{role_instruction}\n\nUser: {user_input}\nChatbot:")
-    return clean_response(response.text.strip())
+
+    try:
+        response = model.generate_content(f"{role_instruction}\n\nUser: {user_input}\nChatbot:")
+
+        # Safely get text
+        if hasattr(response, "text") and response.text:
+            output_text = response.text.strip()
+        elif response.candidates and response.candidates[0].content.parts:
+            output_text = response.candidates[0].content.parts[0].text.strip()
+        else:
+            output_text = "I'm sorry, I couldn't generate a response."
+
+        return clean_response(output_text)
+
+    except Exception as e:
+        return f"Error: {str(e)}"
+
 
 def main():
     st.title("🩺 Medical Chatbot")
@@ -45,4 +60,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
