@@ -9,7 +9,7 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # Create the model object
-model = genai.GenerativeModel(model_name="gemini-2.5-pro")  # use gemini-1.5-pro for stability
+model = genai.GenerativeModel(model_name="gemini-2.0-flash")  # use gemini-2.0-flash for stability
 
 def clean_response(text):
     return re.sub(r"\*\*(.*?)\*\*", r"\1", text)
